@@ -1,0 +1,17 @@
+{
+    "name": "hp/chatapp",
+    "authors": [
+        {
+            "name": "white-fortune",
+            "email": "whitefortune271828@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ChatApp\\": "src/"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "*"
+    }
+}
