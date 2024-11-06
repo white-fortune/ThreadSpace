@@ -8,10 +8,14 @@
     ],
     "autoload": {
         "psr-4": {
-            "ChatApp\\": "src/"
+            "ChatApp\\": "src/controller"
         }
     },
+    "scripts": {
+        "ws": "php public/wsserver.php"
+    },
     "require": {
-        "cboden/ratchet": "*"
+        "cboden/ratchet": "*",
+        "textalk/websocket": "^1.5"
     }
 }

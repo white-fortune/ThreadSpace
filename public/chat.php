@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<?php
+require dirname(__DIR__, 1) . "\\vendor\\autoload.php";
+
+use WebSocket\Client;
+
+session_start();
+if(!isset($_SESSION["email"])) {
+    header("Location: /public/login.php");
+	exit();
+}
+
+$server = "ws://localhost:9000/chat";
+$client = new Client($server);
+$client->send("NEWUSER: {$_COOKIE['displayname']}");
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -109,14 +124,19 @@
     </style>
 </head>
 <body>
-    <div class="chat-card">
-        <div class="chat-header">
-            <div class="h2"></div>
-        </div>
-        <div class="chat-body"></div>
-        <div class="chat-footer">
-            <input placeholder="Type your message" type="text" class="text">
-            <button onclick="sendMessage()">Send</button>
+    <?php
+    include("navbar.php") 
+    ?>
+    <div class="container">
+        <div class="chat-card">
+            <div class="chat-header">
+                <div class="h2"></div>
+            </div>
+            <div class="chat-body"></div>
+            <div class="chat-footer">
+                <input placeholder="Type your message" type="text" class="text">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
     </div>
 
@@ -129,12 +149,21 @@
             newMsg.classList.add("message", "incoming");
 
             const p = document.createElement("p");
-            p.textContent = event.data;
-
+            
+            let data = event.data.split(":")
+            if(data.length == 1) {
+                p.textContent = event.data;
+            } else {
+                switch(data[0]) {
+                    case 'NEWUSER':
+                        p.innerHTML = `<b>${data[1]}</b> just joined the chat!!`;
+                        break;
+                    }
+            }
             newMsg.appendChild(p);
             chatBox.appendChild(newMsg);
-            
             chatBox.scrollTop = chatBox.scrollHeight;
+
         }
 
         socket.onopen = function() {
