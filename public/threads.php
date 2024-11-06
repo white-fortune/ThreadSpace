@@ -84,11 +84,49 @@ if(!isset($_SESSION["email"])) {
     
     <br>
     <div class="container">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Start Thread
+        </button>
+
+        <form action="../src/controller/thread.php" method="post">
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Start a new thraed</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="thread-name" class="col-form-label">Thread Name:</label>
+                                <input type="text" class="form-control" type="text" name="threadname">
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="col-form-label">Description:</label>
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Password:</label>
+                                <input class="form-control" type="text" name="password">
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-outline-success" type="submit">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+        <br><br>
         <div class="card">
-            <h3 class="card__title">Public</h3>
+            <h3 class="card__title">Say Hellou!!!!</h3>
             <p class="card__content">This thread is open all the time and anyone can join this without any credentials</p>
             <div class="card__date">
-                Open
+                Public
             </div>
             <div class="card__arrow" onclick="window.location.href = '/public/chat.php'">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15" width="15">
