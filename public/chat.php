@@ -130,7 +130,7 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
     <div class="container">
         <div class="chat-card">
             <div class="chat-header">
-                <div class="h2"></div>
+                <div class="h2" id="displayname"><?php echo $_COOKIE['displayname'] ?></div>
             </div>
             <div class="chat-body"></div>
             <div class="chat-footer">
@@ -152,7 +152,7 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
             
             let data = event.data.split(":")
             if(data.length == 1) {
-                p.textContent = event.data;
+                p.innerHTML = event.data;
             } else {
                 switch(data[0]) {
                     case 'NEWUSER':
@@ -172,21 +172,24 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
 
         function sendMessage() {
             const message = document.querySelector('.text').value.trim();
-            const chatBox = document.querySelector('.chat-body');
-            const newMsg = document.createElement("div");
-            newMsg.classList.add("message", "outgoing");
-
-            const p = document.createElement("p");
-            p.textContent = message;
-
-            newMsg.appendChild(p);
-            chatBox.appendChild(newMsg);
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            socket.send(message);
-
-            document.querySelector('.text').value = "";
+            if(message != "") {
+                const chatBox = document.querySelector('.chat-body');
+                const newMsg = document.createElement("div");
+                newMsg.classList.add("message", "outgoing");
+    
+                const p = document.createElement("p");
+                p.innerHTML = message
+    
+                newMsg.appendChild(p);
+                chatBox.appendChild(newMsg);
+    
+                chatBox.scrollTop = chatBox.scrollHeight;
+    
+                let sender = document.querySelector('#displayname').innerHTML
+                socket.send(`<b>${sender}</b><br> ${message}`);
+    
+                document.querySelector('.text').value = "";
+            } 
         }
     </script>
 
