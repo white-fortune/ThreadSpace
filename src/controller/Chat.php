@@ -22,41 +22,68 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn)
     {
         $this->clients->attach($conn);
-        // echo "New connection\n";
+        $id = spl_object_id($conn);
+        // print_r("New connection id [{$id}]\n");
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
-        $command = explode(":", $msg);
-        switch($command[0]) {
-            case "NEWUSER":
-                $roomname = $command[1];
-                $displayname = $command[2];
-                $thread = getThread($roomname);
-
-                switch($thread["state"]) {
-                    case "public":
+        try {
+            $command = explode(":", $msg);
+            switch($command[0]) {
+                case "NEWUSER":
+                    $roomname = $command[1];
+                    $displayname = $command[2];
+                    $thread = getThread($roomname);
+    
+                    switch($thread["state"]) {
+                        case "public":
+                            $this->addToRoom($roomname, $from);
+                            // print_r("Room [{$roomname}] population: {$this->rooms[$roomname]->count()}\n");
+                            $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
+                            break;
+                        case "private":
+                            if (isset($command[3])) {
+                                if($command[3] === "JOINPRIVATE") {
+                                    $this->addToRoom($roomname, $from);
+                                    // print_r("Room [{$roomname}] population: {$this->rooms[$roomname]->count()}\n");
+                                    $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
+                                }
+                            } else {
+                                $from->send("SERVER:PRIVATE");
+                            }
+                    }
+                    break;
+                case "SEND":
+                    $roomname = $command[1];
+                    $message = $command[2];
+                    $id = spl_object_id($from);
+                    // print_r("Message [{$message}] got from Room [{$roomname}] from conn [{$id}]\n");
+                    $this->sendToRoom($roomname, $message, $from);
+                    break;
+                case "PASSWORD":
+                    $roomname = $command[1];
+                    $password = $command[2];
+                    $displayname = $command[3];
+                    $thread = getThread($roomname);
+                    
+                    if($password === $thread["password"]) {
+                        $from->send("OK");
                         $this->addToRoom($roomname, $from);
-                        // print_r("Room [{$roomname}] population: {$this->rooms[$roomname]->count()}\n");
                         $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
-                        break;
-                    case "private":
-                        $from->send("SERVER:PRIVATE");
-                }
-                break;
-            case "SEND":
-                $roomname = $command[1];
-                $message = $command[2];
-                $id = spl_object_id($from);
-                // print_r("Message [{$message}] got from Room [{$roomname}] from conn [{$id}]\n");
-                $this->sendToRoom($roomname, $message, $from);
-        }
+                    } else {
+                        echo "Bruh\n";
+                    }
+                    break;
+            }
+        } catch (Exception $e) {}
     }
 
     public function onClose(ConnectionInterface $conn)
     {
+        $id = spl_object_id($conn);
+        // print_r("Close connection of id [{$id}]\n");
         $this->clients->detach($conn);
-        // echo "Connection closed\n";
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
@@ -77,7 +104,7 @@ class Chat implements MessageComponentInterface {
         foreach($this->rooms[$roomname] as $client) {
             if($client !== $from) {
                 $client->send($msg);
-                // $id = spl_object_id($client);
+                $id = spl_object_id($client);
                 // print_r("Sent to {$id} : {$msg}\n");
             }
         }

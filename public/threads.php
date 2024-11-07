@@ -10,7 +10,7 @@ if(!isset($_SESSION["email"])) {
 include("../src/controller/db.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(isset($_POST["threadname"]) && isset($_POST["description"]) && isset($_POST["password"])) {
+    if(isset($_POST["threadname"]) && isset($_POST["description"]) && isset($_POST["password"]) && isset($_POST["threadtype"])) {
         $threadname = filter_input(INPUT_POST, "threadname", FILTER_SANITIZE_SPECIAL_CHARS);
         $desc = filter_input(INPUT_POST, "description", FILTER_SANITIZE_SPECIAL_CHARS);
         $threadtype = filter_input(INPUT_POST, "threadtype", FILTER_SANITIZE_SPECIAL_CHARS);
