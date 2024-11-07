@@ -34,6 +34,13 @@
         }
     }
 
+    function getAllUsers() {
+        global $conn;
+        $sql = "SELECT * FROM users";
+        $data = mysqli_query($conn, $sql);
+        return mysqli_fetch_all($data, MYSQLI_ASSOC);;
+    }
+
     function varifyPassword($email, $password) {
         global $conn;
         $sql = "SELECT * FROM users WHERE email='$email'";
