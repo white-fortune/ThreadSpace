@@ -72,7 +72,7 @@ class Chat implements MessageComponentInterface {
                         $this->addToRoom($roomname, $from);
                         $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
                     } else {
-                        echo "Bruh\n";
+                        $from->send("NO");
                     }
                     break;
             }
@@ -101,12 +101,16 @@ class Chat implements MessageComponentInterface {
     }
 
     private function sendToRoom(string $roomname, $msg, ConnectionInterface $from) {
-        foreach($this->rooms[$roomname] as $client) {
-            if($client !== $from) {
-                $client->send($msg);
-                // $id = spl_object_id($client);
-                // print_r("Sent to {$id} : {$msg}\n");
+        try {
+            foreach($this->rooms[$roomname] as $client) {
+                if($client !== $from) {
+                    $client->send($msg);
+                    // $id = spl_object_id($client);
+                    // print_r("Sent to {$id} : {$msg}\n");
+                }
             }
+        } catch (Exception $th) {
+            print_r($th->getMessage());
         }
     }
 }

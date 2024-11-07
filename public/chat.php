@@ -23,6 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         setcookie("room", $roomname, time() + 86400, "/");
         header("Location: /public/chat.php?room={$roomname}");
         exit();
+    } else {
+        header("Location: /public/chat.php?room={$roomname}");
+        exit();
     }
 }
 
@@ -37,7 +40,7 @@ $thread = getThread($roomname);
     <title>Chat</title>
     <style>
         .chat-card {
-            width: 300px;
+            width: 450px;
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -178,7 +181,7 @@ $thread = getThread($roomname);
                         aria-expanded="false"
                         aria-controls="collapseExample"
                         >
-                        <?php echo $_GET['room'] ?>
+                        <div id="roomname"><?php echo $_GET['room'] ?></div>
                     </button>
                 </p>
                 <div class="collapse" id="collapseExample">
@@ -204,14 +207,7 @@ $thread = getThread($roomname);
         let roomname = document.querySelector('#roomname').innerHTML
 
         function addMessage(message) {
-            const chatBox = document.querySelector('.chat-body');
-            const newMsg = document.createElement("div");
-            const p = document.createElement("p");
-            p.innerHTML = message
-            newMsg.classList.add("message", "incoming");
-            newMsg.appendChild(p);
-            chatBox.appendChild(newMsg);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            
         }
 
         socket.onopen = function() {
@@ -219,12 +215,23 @@ $thread = getThread($roomname);
         }
 
         socket.onmessage = function(event) {
+            const chatBox = document.querySelector('.chat-body');
             if (event.data.indexOf(":") != -1) {
                 let command = event.data.split(":")
                 switch(command[1]) {
                     case "JOINOK":
                         let joined = command[2]
-                        addMessage(`<b>${joined}</b> Just joined the chat`)
+                        message = `<b>${joined}</b> Just joined the chat`
+                        
+                        let newMsg = `
+                        <div class="alert alert-primary" role="alert">
+                            <p class="joined">${message}</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        `
+                        chatBox.insertAdjacentHTML("beforeend", newMsg)
+                        chatBox.scrollTop = chatBox.scrollHeight;
+
                         break  
                     case "PRIVATE":
                         let room = Cookies.get('room');
@@ -236,7 +243,13 @@ $thread = getThread($roomname);
                         break          
                 }
             } else {
-                addMessage(event.data)
+                const newMsg = document.createElement("div");
+                const p = document.createElement("p");
+                p.innerHTML = event.data
+                newMsg.classList.add("message", "incoming");
+                newMsg.appendChild(p);
+                chatBox.appendChild(newMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
 
