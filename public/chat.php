@@ -153,7 +153,11 @@ if(!isset($_SESSION["email"])) {
                     case "JOINOK":
                         let joined = command[2]
                         p.innerHTML = `<b>${joined}</b> Just joined the chat`
-                        break                
+                        break  
+                    case "PRIVATE":
+                        alert("This is a private room")
+                        window.location.href = "/public/threads.php"
+                        break             
                 }
             } else {
                 p.innerHTML = event.data;

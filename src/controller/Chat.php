@@ -2,6 +2,8 @@
 
 namespace ChatApp;
 
+include(__DIR__ . "/db.php");
+
 use Exception;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
@@ -30,9 +32,17 @@ class Chat implements MessageComponentInterface {
             case "NEWUSER":
                 $roomname = $command[1];
                 $displayname = $command[2];
-                $this->addToRoom($roomname, $from);
-                // print_r("Room [{$roomname}] population: {$this->rooms[$roomname]->count()}\n");
-                $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
+                $thread = getThread($roomname);
+
+                switch($thread["state"]) {
+                    case "public":
+                        $this->addToRoom($roomname, $from);
+                        // print_r("Room [{$roomname}] population: {$this->rooms[$roomname]->count()}\n");
+                        $this->sendToRoom($roomname, "SERVER:JOINOK:{$displayname}", $from);
+                        break;
+                    case "private":
+                        $from->send("SERVER:PRIVATE");
+                }
                 break;
             case "SEND":
                 $roomname = $command[1];

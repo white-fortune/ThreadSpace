@@ -13,9 +13,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(isset($_POST["threadname"]) && isset($_POST["description"]) && isset($_POST["password"])) {
         $threadname = filter_input(INPUT_POST, "threadname", FILTER_SANITIZE_SPECIAL_CHARS);
         $desc = filter_input(INPUT_POST, "description", FILTER_SANITIZE_SPECIAL_CHARS);
+        $threadtype = filter_input(INPUT_POST, "threadtype", FILTER_SANITIZE_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
-        addThread($threadname, $desc, $password, 'Public');
+        addThread($threadname, $desc, $password, $threadtype);
+        header("Location: /public/threads.php");
+        exit();
     }
 }
 ?>
@@ -114,15 +117,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="thread-name" class="col-form-label">Thread Name:</label>
-                                <input type="text" class="form-control" type="text" name="threadname">
+                                <input type="text" class="form-control" type="text" name="threadname" required>
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="col-form-label">Description:</label>
-                                <textarea class="form-control" name="description"></textarea>
+                                <textarea class="form-control" name="description" required></textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="thread-name" class="col-form-label">Thread Type:</label>
+                                <select class="form-select" aria-label="Default select example" name="threadtype">
+                                    <option value="public" selected>Public</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="passwordDiv">
                                 <label for="message-text" class="col-form-label">Password:</label>
-                                <input class="form-control" type="text" name="password">
+                                <input class="form-control" type="text" name="password" id="passinput">
                             </div>
                             <div class="mb-3">
                                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
@@ -137,13 +147,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <br><br>
         <?php
-            foreach(getThread() as $thread) {
+            foreach(getAllThread() as $thread) {
                 echo <<<HTML
                     <div class="card">
                         <h3 class="card__title">{$thread["name"]}</h3>
                         <p class="card__content">{$thread["description"]}</p>
                         <div class="card__state">
-                        <span class="badge text-bg-success">{$thread["state"]}</span>
+                            <span class="badge text-bg-success">{$thread["state"]}</span>
                         </div>
                         <div class="card__arrow">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15" width="15">
@@ -162,6 +172,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             arrow.addEventListener("click", function() {
                 window.location.href = `/public/chat.php?room=${roomname}`
             })
+        })
+
+
+        let passField = document.querySelector('div#passwordDiv')
+        passField.style.display = "none"
+
+        let passInput = document.querySelector('#passinput')
+        let selectType = document.querySelector('select')
+
+        selectType.addEventListener("change", function() {
+            switch(selectType.value) {
+                case "public":
+                    passField.style.display = "none"
+                    passInput.removeAttribute("required")
+                    break
+                case "private":
+                    passField.style.display = "block"
+                    passInput.setAttribute("required", "required")
+                    break
+            }
         })
     </script>
 </body>

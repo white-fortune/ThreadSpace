@@ -46,12 +46,23 @@
         }
     }
 
-    function getThread() {
+    function getAllThread() {
         global $conn;
-        $getallsql = mysqli_query($conn, "SELECT name, description, state FROM threads WHERE 1=1");
-        $threads = mysqli_fetch_all($getallsql, MYSQLI_ASSOC);
+        $sql = "SELECT name, description, state FROM threads WHERE 1=1";
+        $getallsql = mysqli_query($conn, $sql);
+        return mysqli_fetch_all($getallsql, MYSQLI_ASSOC);;
+    }
 
-        return $threads;
+    function getThread(string $roomname) {
+        $db_server = "localhost";
+        $db_user = "root";
+        $db_pass = "";
+        $db_name = "users";
+        $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+
+        $sql = "SELECT name, description, state FROM threads WHERE name='$roomname'";
+        $getthread = mysqli_query($conn, $sql);
+        return mysqli_fetch_assoc($getthread);
     }
 
     function addThread($threadname, $description, $password, $state) {
