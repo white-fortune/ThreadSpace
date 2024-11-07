@@ -41,7 +41,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/public/dashboard.php">Myself</a></li>
-            <li><a class="dropdown-item" href="/public/chat.php">Chat with friends</a></li>
+            <li><a class="dropdown-item" href="/public/chat.php?room=Say Hellou!!!">Chat with EVERYONE!!</a></li>
             <li><hr class="dropdown-divider"></li>
             <form action="<?php $_SERVER["PHP_SELF"]?>" method="get" style="margin-left: 10px;">
               <li><button class="btn btn-outline-danger" type="submit" name="logout">Logout</button></li>

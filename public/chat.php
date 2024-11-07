@@ -25,6 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 }
+
+include(dirname(__DIR__) . "/src/controller/db.php");
+$roomname = $_GET["room"];
+$thread = getThread($roomname);
 ?>
 <html lang="en">
 <head>
@@ -44,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .chat-header {
             padding: 10px;
             background-color: #f2f2f2;
-            display: flex;
             align-items: center;
         }
 
@@ -163,11 +166,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             </div>
         </form>
-
+            
         <div class="chat-card">
             <div class="chat-header">
+                <p class="d-inline-flex gap-1">
+                    <button
+                    class="btn btn-outline-secondary collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample"
+                        aria-expanded="false"
+                        aria-controls="collapseExample"
+                        >
+                        <?php echo $_GET['room'] ?>
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExample">
+                    <div class="card card-body">
+                        <?php echo $thread["description"] ?>
+                    </div>
+                </div>
                 <div class="h2" id="displayname" style="display: none;"><?php echo $_COOKIE['displayname'] ?></div>
-                <div class="h2" id="roomname"><?php echo $_GET['room'] ?></div>
             </div>
             <div class="chat-body"></div>
             <div class="chat-footer">

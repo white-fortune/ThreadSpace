@@ -12,7 +12,10 @@
         }
     },
     "scripts": {
-        "ws": "php public/wsserver.php"
+        "ws": [
+            "Composer\\Config::disableProcessTimeout",
+            "php public/wsserver.php"
+        ]
     },
     "require": {
         "cboden/ratchet": "*",

@@ -22,7 +22,7 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn)
     {
         $this->clients->attach($conn);
-        $id = spl_object_id($conn);
+        // $id = spl_object_id($conn);
         // print_r("New connection id [{$id}]\n");
     }
 
@@ -57,7 +57,7 @@ class Chat implements MessageComponentInterface {
                 case "SEND":
                     $roomname = $command[1];
                     $message = $command[2];
-                    $id = spl_object_id($from);
+                    // $id = spl_object_id($from);
                     // print_r("Message [{$message}] got from Room [{$roomname}] from conn [{$id}]\n");
                     $this->sendToRoom($roomname, $message, $from);
                     break;
@@ -104,7 +104,7 @@ class Chat implements MessageComponentInterface {
         foreach($this->rooms[$roomname] as $client) {
             if($client !== $from) {
                 $client->send($msg);
-                $id = spl_object_id($client);
+                // $id = spl_object_id($client);
                 // print_r("Sent to {$id} : {$msg}\n");
             }
         }
