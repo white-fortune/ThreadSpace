@@ -60,7 +60,7 @@
         $db_name = "users";
         $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 
-        $sql = "SELECT name, description, state FROM threads WHERE name='$roomname'";
+        $sql = "SELECT name, description, state, password FROM threads WHERE name='$roomname'";
         $getthread = mysqli_query($conn, $sql);
         return mysqli_fetch_assoc($getthread);
     }
