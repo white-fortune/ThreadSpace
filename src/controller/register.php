@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
         if(register($displayname, $email, $password)) {
-            header("Location: /login.php");
+            header("Location: /public/login.php");
             exit();
         } else {
             echo "Registration failed!!";

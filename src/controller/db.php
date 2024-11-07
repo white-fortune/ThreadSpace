@@ -46,6 +46,14 @@
         }
     }
 
+    function getThread() {
+        global $conn;
+        $getallsql = mysqli_query($conn, "SELECT name, description, state FROM threads WHERE 1=1");
+        $threads = mysqli_fetch_all($getallsql, MYSQLI_ASSOC);
+
+        return $threads;
+    }
+
     function addThread($threadname, $description, $password, $state) {
         global $conn;
         $sql = "INSERT INTO threads (name, description, password, state) 
@@ -54,12 +62,6 @@
 
         try {
             mysqli_query($conn, $sql);
-            
-            $getallsql = mysqli_query($conn, "SELECT name, description, state FROM threads WHERE 1=1");
-            $threads = mysqli_fetch_all($getallsql, MYSQLI_ASSOC);
-
-            mysqli_close($conn);
-            return $threads;
         } catch (mysqli_sql_exception) {
             mysqli_close($conn);
             return false;

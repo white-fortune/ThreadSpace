@@ -5,6 +5,19 @@ if(!isset($_SESSION["email"])) {
     header("Location: /public/login.php");
 	exit();
 }
+
+
+include("../src/controller/db.php");
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if(isset($_POST["threadname"]) && isset($_POST["description"]) && isset($_POST["password"])) {
+        $threadname = filter_input(INPUT_POST, "threadname", FILTER_SANITIZE_SPECIAL_CHARS);
+        $desc = filter_input(INPUT_POST, "description", FILTER_SANITIZE_SPECIAL_CHARS);
+        $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
+
+        addThread($threadname, $desc, $password, 'Public');
+    }
+}
 ?>
 <html lang="en">
 <head>
@@ -16,7 +29,7 @@ if(!isset($_SESSION["email"])) {
         --border-radius: 0.75rem;
         --primary-color: #7257fa;
         --secondary-color: #3c3852;
-        width: 210px;
+        width: 80%;
         font-family: "Arial";
         padding: 1rem;
         cursor: pointer;
@@ -24,6 +37,7 @@ if(!isset($_SESSION["email"])) {
         background: #f1f1f3;
         box-shadow: 0px 8px 16px 0px rgb(0 0 0 / 3%);
         position: relative;
+        margin: 10px;
         }
 
         .card > * + * {
@@ -41,9 +55,9 @@ if(!isset($_SESSION["email"])) {
         font-weight: bold;
         }
 
-        .card .card__date {
+        .card .card__state {
         color: #6e6b80;
-        font-size: 0.8rem;
+        font-size: 20px;
         }
 
         .card .card__arrow {
@@ -89,7 +103,7 @@ if(!isset($_SESSION["email"])) {
             Start Thread
         </button>
 
-        <form action="../src/controller/thread.php" method="post">
+        <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post">
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -122,18 +136,33 @@ if(!isset($_SESSION["email"])) {
 
 
         <br><br>
-        <div class="card">
-            <h3 class="card__title">Say Hellou!!!!</h3>
-            <p class="card__content">This thread is open all the time and anyone can join this without any credentials</p>
-            <div class="card__date">
-                Public
-            </div>
-            <div class="card__arrow" onclick="window.location.href = '/public/chat.php'">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15" width="15">
-                    <path fill="#fff" d="M13.4697 17.9697C13.1768 18.2626 13.1768 18.7374 13.4697 19.0303C13.7626 19.3232 14.2374 19.3232 14.5303 19.0303L20.3232 13.2374C21.0066 12.554 21.0066 11.446 20.3232 10.7626L14.5303 4.96967C14.2374 4.67678 13.7626 4.67678 13.4697 4.96967C13.1768 5.26256 13.1768 5.73744 13.4697 6.03033L18.6893 11.25H4C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75H18.6893L13.4697 17.9697Z"></path>
-                </svg>
-            </div>
-        </div>
+        <?php
+            foreach(getThread() as $thread) {
+                echo <<<HTML
+                    <div class="card">
+                        <h3 class="card__title">{$thread["name"]}</h3>
+                        <p class="card__content">{$thread["description"]}</p>
+                        <div class="card__state">
+                        <span class="badge text-bg-success">{$thread["state"]}</span>
+                        </div>
+                        <div class="card__arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15" width="15">
+                                <path fill="#fff" d="M13.4697 17.9697C13.1768 18.2626 13.1768 18.7374 13.4697 19.0303C13.7626 19.3232 14.2374 19.3232 14.5303 19.0303L20.3232 13.2374C21.0066 12.554 21.0066 11.446 20.3232 10.7626L14.5303 4.96967C14.2374 4.67678 13.7626 4.67678 13.4697 4.96967C13.1768 5.26256 13.1768 5.73744 13.4697 6.03033L18.6893 11.25H4C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75H18.6893L13.4697 17.9697Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                HTML;
+            } 
+        ?>
     </div>
+    <script>
+        const arrows = document.querySelectorAll('.card__arrow')
+        arrows.forEach(arrow => {
+            let roomname = arrow.parentElement.querySelector(".card__title").innerHTML
+            arrow.addEventListener("click", function() {
+                window.location.href = `/public/chat.php?room=${roomname}`
+            })
+        })
+    </script>
 </body>
 </html>

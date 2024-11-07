@@ -2,17 +2,11 @@
 <?php
 require dirname(__DIR__, 1) . "\\vendor\\autoload.php";
 
-use WebSocket\Client;
-
 session_start();
 if(!isset($_SESSION["email"])) {
     header("Location: /public/login.php");
 	exit();
 }
-
-$server = "ws://localhost:9000/chat";
-$client = new Client($server);
-$client->send("NEWUSER: {$_COOKIE['displayname']}");
 ?>
 <html lang="en">
 <head>
@@ -130,7 +124,8 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
     <div class="container">
         <div class="chat-card">
             <div class="chat-header">
-                <div class="h2" id="displayname"><?php echo $_COOKIE['displayname'] ?></div>
+                <div class="h2" id="displayname" style="display: none;"><?php echo $_COOKIE['displayname'] ?></div>
+                <div class="h2" id="roomname"><?php echo $_GET['room'] ?></div>
             </div>
             <div class="chat-body"></div>
             <div class="chat-footer">
@@ -142,33 +137,34 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
 
     <script>
         const socket = new WebSocket("ws://localhost:9000/chat");
+        
+        let sender = document.querySelector('#displayname').innerHTML
+        let roomname = document.querySelector('#roomname').innerHTML
+
+        socket.onopen = function() {
+            socket.send(`NEWUSER:${roomname}:${sender}`);
+        }
 
         socket.onmessage = function(event) {
+            const p = document.createElement("p");
+            if (event.data.indexOf(":") != -1) {
+                let command = event.data.split(":")
+                switch(command[1]) {
+                    case "JOINOK":
+                        let joined = command[2]
+                        p.innerHTML = `<b>${joined}</b> Just joined the chat`
+                        break                
+                }
+            } else {
+                p.innerHTML = event.data;
+            }
             const chatBox = document.querySelector('.chat-body');
             const newMsg = document.createElement("div");
             newMsg.classList.add("message", "incoming");
-
-            const p = document.createElement("p");
-            
-            let data = event.data.split(":")
-            if(data.length == 1) {
-                p.innerHTML = event.data;
-            } else {
-                switch(data[0]) {
-                    case 'NEWUSER':
-                        p.innerHTML = `<b>${data[1]}</b> just joined the chat!!`;
-                        break;
-                    }
-            }
             newMsg.appendChild(p);
             chatBox.appendChild(newMsg);
             chatBox.scrollTop = chatBox.scrollHeight;
-
         }
-
-        socket.onopen = function() {
-            console.log('WebSocket connection established');
-        };
 
         function sendMessage() {
             const message = document.querySelector('.text').value.trim();
@@ -176,19 +172,14 @@ $client->send("NEWUSER: {$_COOKIE['displayname']}");
                 const chatBox = document.querySelector('.chat-body');
                 const newMsg = document.createElement("div");
                 newMsg.classList.add("message", "outgoing");
-    
                 const p = document.createElement("p");
                 p.innerHTML = message
-    
                 newMsg.appendChild(p);
                 chatBox.appendChild(newMsg);
-    
                 chatBox.scrollTop = chatBox.scrollHeight;
-    
-                let sender = document.querySelector('#displayname').innerHTML
-                socket.send(`<b>${sender}</b><br> ${message}`);
-    
                 document.querySelector('.text').value = "";
+
+                socket.send(`SEND:${roomname}:<b>${sender}</b><br> ${message}`);
             } 
         }
     </script>
