@@ -5,6 +5,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
 			session_unset();
 			session_destroy();
       setcookie("displayname", "", time() - 86400, "/");
+      setcookie("room", "", time() - 86400, "/");
       			
 			header("Location: /public/login.php");
 			exit();
@@ -32,6 +33,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
+          <a class="nav-link" href="/public/home.php">Home</a>
           <a class="nav-link" href="/public/threads.php">All threads</a>
           <a class="nav-link" href="/public/register.php">Register</a>
           <a class="nav-link" href="/public/login.php">Login</a>
