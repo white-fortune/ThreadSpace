@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // $client = new Client($server);
                 // $client->send("NEWUSER: $displayname joined");
 
-                header("Location: /public/dashboard.php");
+                header("Location: /public/threads.php");
                 exit();
             } catch (\Exception $e) {
                 echo $e->getMessage();
