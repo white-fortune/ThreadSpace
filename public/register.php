@@ -278,6 +278,14 @@ if(isset($_SESSION["email"])) {
 				/>
 				<br><br>
 				<input
+					placeholder="ABOUT YOU/BIO"
+					class="brutalist-input smooth-type"
+					type="text"
+					name="description"
+					required
+				/>
+				<br><br>
+				<input
 					placeholder="PASSWORD"
 					class="brutalist-input smooth-type"
 					type="password"

@@ -6,10 +6,10 @@
     $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
     
 
-    function register($displayname, $email, $password) {
+    function register($displayname, $email, $description, $password) {
         global $conn;
-        $sql = "INSERT INTO users (displayname, email, password) 
-        VALUES ('$displayname', '$email', '$password')
+        $sql = "INSERT INTO users (displayname, email, description, password) 
+        VALUES ('$displayname', '$email', '$description', '$password')
         ";
 
         try {

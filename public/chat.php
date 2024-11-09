@@ -221,7 +221,7 @@ $thread = getThread($roomname);
                 switch(command[1]) {
                     case "JOINOK":
                         let joined = command[2]
-                        message = `<b>${joined}</b> Just joined the chat`
+                        message = `<b>${joined}</b> just joined the chat`
                         
                         let newMsg = `
                         <div class="alert alert-primary" role="alert">
